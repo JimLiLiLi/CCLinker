@@ -1,0 +1,98 @@
+<!-- simple-todos.html -->
+<head>
+  <title>CCLinker v0.01</title>
+</head>
+
+<body>
+
+  <!-- main nav -->
+    {{> mainNav}}
+  <!-- main nav end -->
+  <section class="container">
+    <!-- list lobbies -->
+      <div class="panel panel-default">
+        <div class="panel-body">
+           <div class="list-group">
+            {{#each games}}
+              {{> game}}
+            {{/each}}
+          </div>
+        </div>
+      </div>
+    <!-- list lobbies end-->        
+  </section>
+  <!-- create lobby modal !-->
+    {{> modalCreate}}
+  <!-- create lobby modal end !-->
+</body>
+
+<template name="game">
+  <a href="cccaster:{{ip}}:{{port}}" class="list-group-item">{{name}}
+    <div class="overlay">
+      <div class="overlay-table">
+        <span class="overlay-table-cell">Join Lobby</span>
+      </div>
+    </div>
+  </a>
+</template>
+
+<template name="mainNav">
+  <nav class="navbar navbar-default" role="navigation">
+    <div class="container">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#primary-nav">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#">See me in Melty</a>
+      </div>
+
+      
+      <div class="collapse navbar-collapse" id="primary-nav">
+        <ul class="nav navbar-nav navbar-right">
+          <li><button type="button" class="btn btn-primary navbar-btn" id="create-lobby">Create lobby</button></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+</template> 
+
+<template name="modalCreate">
+  <div class="modal fade" id="modal-create">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <form class="form-horizontal" id="create-game">
+        <div class="modal-header">
+        </div>
+        <div class="modal-body">
+          
+            <div class="form-group">
+              <label for="ip" class="col-sm-3 control-label">Your IP</label>
+              <div class="col-sm-9">
+                <input type="text" name="ip" id="ip" value="{{getIp}}" class="form-control" disabled>
+              </div>
+            </div>
+            <div class="form-group">
+                <label for="name" class="col-sm-3 control-label">Lobby Name</label>
+                <div class="col-sm-9">
+                  <input type="text" name="name" id="name" placeholder="Name of the lobby" class="form-control">
+                </div>  
+            </div>
+            <div class="form-group">
+              <label for="port" class="col-sm-3 control-label">Port</label>
+              <div class="col-sm-9">
+                <input type="number" name="port" id="port" placeholder="Port" class="form-control">
+              </div>
+            </div>          
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          <a id="launch-host" class="btn btn-primary" href="cccaster:{{getPort}}">caster</a>
+        </div>
+        </form>
+      </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+  </div><!-- /.modal -->
+</template>  
