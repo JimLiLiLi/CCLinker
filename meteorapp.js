@@ -96,6 +96,7 @@ Template.currentLobbies.events({
       template.find('#filterRegion .dropdown-toggle').innerHTML = 'Region / '+filter;
     } else{
       Session.set('filteredbyRegion', '');
+      template.find('#filterRegion .dropdown-toggle').innerHTML = 'Region';
     }  
   }
 });
