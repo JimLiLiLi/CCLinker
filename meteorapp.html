@@ -4,21 +4,16 @@
 </head>
 
 <body>
-
+  
   <!-- main nav -->
     {{> mainNav}}
   <!-- main nav end -->
   <section class="container">
+    {{> header}}
+  </section>
+  <section class="container">
     <!-- list lobbies -->
-      <div class="panel panel-default">
-        <div class="panel-body">
-           <div class="list-group">
-            {{#each games}}
-              {{> game}}
-            {{/each}}
-          </div>
-        </div>
-      </div>
+      {{> currentLobbies}}
     <!-- list lobbies end-->        
   </section>
   <!-- create lobby modal !-->
@@ -26,18 +21,75 @@
   <!-- create lobby modal end !-->
 </body>
 
-<template name="game">
-  <a href="cccaster:{{ip}}:{{port}}" class="list-group-item">{{name}}
-    <div class="overlay">
-      <div class="overlay-table">
-        <span class="overlay-table-cell">Join Lobby</span>
-      </div>
+<template name="header">
+  <header class="header row">
+    <div class="main-title col-sm-8">
+      <h1>See me in Melty</h1>
+      <h2>Tracker for online melty blood games</h2>
+        <h5>Require: CCCaster v2.1d / To open the caster directly from the site you'll also need <a href="https://github.com/Lucanis/CCLinker/blob/master/Add_Handler_Protocol.bat">this</a></h5>
+      <button type="button" class="btn btn-lg btn-primary" id="create-lobby">Create lobby</button>
+
     </div>
-  </a>
+    <div class="cta-header col-sm-4">
+      <img class="img-responsive" src="/img/aoko.png" alt="Comfy Aoko">
+    </div>
+    </header>
+</template> 
+
+<template name="currentLobbies">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+        <div class="dropdown pull-right" id="filterRegion">
+            filter by:
+            <a href="#" class="dropdown-toggle btn btn-default" data-toggle="dropdown">Region</a>
+
+            <ul class="dropdown-menu" role="menu">
+                <li><a href="#" data-continent="all">All</a></li>
+                <li><a href="#" data-continent="AF">Africa</a></li>
+                <li><a href="#" data-continent="EU">Europe</a></li>
+                <li><a href="#" data-continent="AS">Asia</a></li>
+                <li><a href="#" data-continent="NA">North America</a></li>
+                <li><a href="#" data-continent="SA">South America</a></li>
+                <li><a href="#" data-continent="OC">Oceania</a></li>
+            </ul>
+        </div>
+
+        <h3 class="panel-title">Curent Lobbies</h3>      
+    </div>        
+    <div class="panel-body">
+      Right now there is: {{players}} players connected
+    </div>
+    <ul class="list-group">
+      {{#each games}}
+        {{> game}}
+      {{/each}}
+
+    </ul>        
+  </div>
+</template>
+
+<template name="game">
+    <li class="list-group-item">
+      <div class="HeaderGame">
+        <h4 class="list-group-item-heading">{{gameName}} - <small>{{nick}}</small></h4>
+        <div class="region">{{continent}} / <span class="flag-icon flag-icon-{{country}}"></span></div>
+      </div>
+      <p>{{description}}</p>
+      <p>created: {{elapsedtime}} ago</p>
+      <div class="overlay">
+        <div class="overlay-table">
+          <span class="overlay-table-cell"><a  href="cccaster:{{ip}}:{{port}}" class="join-lobby">Join Lobby</a></span>
+          <span class="overlay-table-cell"><a href="#" data-ipclipboard="{{ip}}:{{port}}" class="clipboard">Just the IP</a></span>
+          {{#if isOwner}}
+            <span class="overlay-table-cell"><a href="#" class="delete-lobby">delete Lobby</a></span>
+          {{/if}}
+        </div>
+      </div>
+    </li>
 </template>
 
 <template name="mainNav">
-  <nav class="navbar navbar-default" role="navigation">
+  <nav class="navbar navbar-inverse" role="navigation">
     <div class="container">
       <div class="navbar-header">
         <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#primary-nav">
@@ -52,7 +104,7 @@
       
       <div class="collapse navbar-collapse" id="primary-nav">
         <ul class="nav navbar-nav navbar-right">
-          <li><button type="button" class="btn btn-primary navbar-btn" id="create-lobby">Create lobby</button></li>
+          <li></li>
         </ul>
       </div>
     </div>
@@ -63,35 +115,48 @@
   <div class="modal fade" id="modal-create">
     <div class="modal-dialog">
       <div class="modal-content">
-        <form class="form-horizontal" id="create-game">
+
         <div class="modal-header">
         </div>
         <div class="modal-body">
-          
+          <div class="form-horizontal">
             <div class="form-group">
-              <label for="ip" class="col-sm-3 control-label">Your IP</label>
+              <label for="ip" class="col-sm-3 control-label">Your IP*</label>
               <div class="col-sm-9">
                 <input type="text" name="ip" id="ip" value="{{getIp}}" class="form-control" disabled>
               </div>
-            </div>
+            </div>    
             <div class="form-group">
-                <label for="name" class="col-sm-3 control-label">Lobby Name</label>
+                <label for="nickname" class="col-sm-3 control-label">Nickname</label>
                 <div class="col-sm-9">
-                  <input type="text" name="name" id="name" placeholder="Name of the lobby" class="form-control">
+                  <input type="text" name="nickname" id="nickname" placeholder="Your Nickname" class="form-control">
+                </div>  
+            </div>                 
+            <div class="form-group">
+                <label for="name" class="col-sm-3 control-label">Lobby Name*</label>
+                <div class="col-sm-9">
+                  <input type="text" name="gameName" id="gameName" placeholder="Name of the lobby" class="form-control">
                 </div>  
             </div>
             <div class="form-group">
-              <label for="port" class="col-sm-3 control-label">Port</label>
+              <label for="description" class="col-sm-3 control-label">Description</label>
+              <div class="col-sm-9">
+                <input type="text" name="description" id="description" class="form-control">
+              </div>
+            </div>           
+            <div class="form-group">
+              <label for="port" class="col-sm-3 control-label">Port*</label>
               <div class="col-sm-9">
                 <input type="number" name="port" id="port" placeholder="Port" class="form-control">
               </div>
-            </div>          
+            </div> 
+            </div>         
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-          <a id="launch-host" class="btn btn-primary" href="cccaster:{{getPort}}">caster</a>
+          <a id="launch-host" class="btn btn-primary" href="cccaster:{{getPort}}">Host</a>
         </div>
-        </form>
+
       </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
   </div><!-- /.modal -->
