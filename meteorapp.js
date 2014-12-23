@@ -2,8 +2,9 @@
 Games = new Mongo.Collection('games');
 
 if (Meteor.isClient) {
-
+  
   Meteor.subscribe('games');
+  Accounts.ui.config({ passwordSignupFields: 'USERNAME_ONLY' });
 
   HTTP.get('http://www.telize.com/geoip', function(err, result) {
     if(err){
@@ -18,6 +19,7 @@ if (Meteor.isClient) {
     }
   }); 
 
+
   Template.modalCreate.events({
   
     'click #launch-host': function (event, template){ 
@@ -25,7 +27,8 @@ if (Meteor.isClient) {
       var gameName = template.find('#gameName').value;
       var description = template.find('#description').value;
       var port = template.find('#port').value;
-      var nick = template.find('#nickname').value;
+      var nick = Meteor.user().username;
+      console.log(nick);
 
 
       if ((gameName !== '')&&(port !== '')){
@@ -62,17 +65,22 @@ if (Meteor.isClient) {
     }
   });
 
-  Template.modalCreate.helpers({
-    getIp: function(){ 
-      return Session.get('ipUser');     
-    },
-  });
-
   Template.header.events({
     'click #create-lobby': function(event){
         $('#modal-create').modal('show');
     }
   });
+
+
+  Template.modalCreate.helpers({
+    getIp: function(){ 
+      return Session.get('ipUser');     
+    },
+
+  });
+
+
+
 
 Template.currentLobbies.helpers({
     games: function () {
@@ -139,7 +147,6 @@ Template.game.events({
       toClipboard(ip);
     }
 });
-
 }
 
 if (Meteor.isServer) {
@@ -152,12 +159,12 @@ if (Meteor.isServer) {
 
     Meteor.setTimeout(function(){
       var verifUser = Meteor.users.findOne({},{_id:user});
-      var lastLogin = verifUser.status.lastLogin.date;
-      var diff = (lastLogin - logOut) / 1000;
-      if(diff < 0){
+      var online = verifUser.status.online;
+      console.log(online);
+      if(!online){
         Games.remove({owner:user});
       }
-    }, 25000);
+    }, 50000);
   });
 
 }

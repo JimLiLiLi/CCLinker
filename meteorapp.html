@@ -25,9 +25,10 @@
   <header class="header row">
     <div class="main-title col-sm-8">
       <h1>See me in Melty</h1>
-      <h2>Tracker for online melty blood games</h2>
+        <h2>Game finder for Melty Blood</h2>
         <h5>Require: CCCaster v2.1C / To open the caster directly from the site you'll also need <a href="https://raw.githubusercontent.com/Lucanis/CCLinker/master/Add_Handler_Protocol.bat">this</a></h5>
-      <button type="button" class="btn btn-lg btn-primary" id="create-lobby">Create lobby</button>
+      <button type="button" class="btn btn-lg btn-primary" id="create-lobby" disabled="{{#unless currentUser}}disabled{{/unless}}">Create lobby</button>
+      {{#unless currentUser}}<p><small>You need to be logged in to create a lobby.</small></p>{{/unless}}
 
     </div>
     <div class="cta-header col-sm-4">
@@ -78,7 +79,7 @@
       <p>created: {{elapsedtime}} ago</p>
       <div class="overlay">
         <div class="overlay-table">
-          <span class="overlay-table-cell"><a  href="cccaster:{{ip}}:{{port}}" class="join-lobby">Join Lobby</a></span>
+          {{#unless currentUser}}<span class="overlay-table-cell"><a  href="cccaster:{{ip}}:{{port}}" class="join-lobby">Join Lobby</a></span>{{/unless}}
           <span class="overlay-table-cell"><a href="#" data-ipclipboard="{{ip}}:{{port}}" class="clipboard">Just the IP</a></span>
           {{#if isOwner}}
             <span class="overlay-table-cell"><a href="#" class="delete-lobby">delete Lobby</a></span>
@@ -104,7 +105,7 @@
       
       <div class="collapse navbar-collapse" id="primary-nav">
         <ul class="nav navbar-nav navbar-right">
-          <li></li>
+         {{> loginButtons}}
         </ul>
       </div>
     </div>
@@ -112,6 +113,7 @@
 </template> 
 
 <template name="modalCreate">
+
   <div class="modal fade" id="modal-create">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -125,13 +127,7 @@
               <div class="col-sm-9">
                 <input type="text" name="ip" id="ip" value="{{getIp}}" class="form-control" disabled>
               </div>
-            </div>    
-            <div class="form-group">
-                <label for="nickname" class="col-sm-3 control-label">Nickname</label>
-                <div class="col-sm-9">
-                  <input type="text" name="nickname" id="nickname" placeholder="Your Nickname" class="form-control">
-                </div>  
-            </div>                 
+            </div>                
             <div class="form-group">
                 <label for="name" class="col-sm-3 control-label">Lobby Name*</label>
                 <div class="col-sm-9">
