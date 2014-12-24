@@ -79,7 +79,7 @@
       <p>created: {{elapsedtime}} ago</p>
       <div class="overlay">
         <div class="overlay-table">
-          {{#unless currentUser}}<span class="overlay-table-cell"><a  href="cccaster:{{ip}}:{{port}}" class="join-lobby">Join Lobby</a></span>{{/unless}}
+          {{#unless isOwner}}<span class="overlay-table-cell"><a  href="cccaster:{{ip}}:{{port}}" class="join-lobby">Join Lobby</a></span>{{/unless}}
           <span class="overlay-table-cell"><a href="#" data-ipclipboard="{{ip}}:{{port}}" class="clipboard">Just the IP</a></span>
           {{#if isOwner}}
             <span class="overlay-table-cell"><a href="#" class="delete-lobby">delete Lobby</a></span>
