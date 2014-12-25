@@ -1,0 +1,91 @@
+/* body{
+	background-image: url("http://i.imgur.com/Xg9VHI4.png");
+	background-repeat: no-repeat;
+	background-position: bottom right;
+} */
+html{
+	height: 100%;
+}
+
+body{
+	background: #111;
+}
+
+h1,h2,h3,h4,h5,h6, .btn{
+	text-transform: uppercase;
+}
+
+.header{
+	margin-bottom: 40px;
+}
+
+.main-title{
+	color: #fff;
+	h1{
+		margin-bottom: 0;
+		color: @brand-primary;
+	}
+	h2{
+		margin-top: 0;
+		margin-bottom: 20px;
+	}
+}
+
+.panel-title{
+	line-height: 2;
+}
+
+.btn{
+	transition: background 0.5s;
+	-moz-transition: background 0.5s;
+	-webkit-transition: background 0.5s;
+	-o-transition: background 0.5s;
+	-ms-transition: background 0.5s;
+}
+
+.region{
+   	font-weight: bold;
+    padding: 10px 15px;
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+
+.overlay {
+    background: @brand-primary;
+    color: #fff;
+    font-weight: bold;
+    height: 100%;
+    left: 0;
+    opacity: 0;
+    position: absolute;
+    text-align: center;
+    text-transform: uppercase;
+    top: 0;
+    transition: all 0.5s ease 0s;
+    width: 100%;
+
+	a{
+		color: #fff;
+	}
+
+	&:hover {
+	    opacity: 1;
+	}
+
+	.overlay-table{
+	    display: table;
+	    height: 100%;
+	    width: 100%;
+	}
+
+	.overlay-table-cell{
+	    display: table-cell;
+	    vertical-align: middle;
+	}    
+}
+
+
+#login-dropdown-list input:first-of-type, #login-dropdown-list input:last-of-type{
+	border-radius: 0;
+}
