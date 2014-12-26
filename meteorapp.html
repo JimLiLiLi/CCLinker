@@ -16,6 +16,9 @@
       {{> currentLobbies}}
     <!-- list lobbies end-->        
   </section>
+  <section class="container">
+      {{> chatrooms}}
+  </section>
   <!-- create lobby modal !-->
     {{> modalCreate}}
   <!-- create lobby modal end !-->
@@ -84,9 +87,13 @@
           {{#if isOwner}}
             <span class="overlay-table-cell"><a href="#" class="delete-lobby">delete Lobby</a></span>
           {{/if}}
+          {{#unless isOwner}}
+            {{> sendMessage}}
+          {{/unless}}
         </div>
       </div>
     </li>
+
 </template>
 
 <template name="mainNav">
@@ -157,3 +164,36 @@
     </div><!-- /.modal-dialog -->
   </div><!-- /.modal -->
 </template>  
+
+<template name="sendMessage">
+  <span class="overlay-table-cell"><a href="#" class="send-message">Send message</a></span>
+</template>
+
+<template name="chatrooms">
+    {{#each chatrooms}}
+      {{> chatroom}}
+    {{/each}}
+</template>  
+
+<template name="chatroom">
+ <div class="chatroom">
+    {{from}} - {{to}}
+    {{> messages}}
+    <input type="text" class="new-message"><button class="send-new-message">Send</button>
+    <button class="close-chatroom">x</button>
+  </div>
+</template>  
+
+<template name="messages">
+    <div class="messages">
+        {{#each messages}}
+            {{> message}}
+        {{/each}}
+    </div>
+</template>
+
+<template name="message">
+    <blockquote>
+        <p>{{message}}</p>
+    </blockquote>
+</template>

@@ -1,9 +1,12 @@
 // simple-todos.js
 Games = new Mongo.Collection('games');
+Chatrooms = new Mongo.Collection('chatrooms');
 
 if (Meteor.isClient) {
   
   Meteor.subscribe('games');
+  Meteor.subscribe('chatrooms');
+
   Accounts.ui.config({ passwordSignupFields: 'USERNAME_ONLY' });
 
   HTTP.get('http://www.telize.com/geoip', function(err, result) {
@@ -20,6 +23,66 @@ if (Meteor.isClient) {
   }); 
 
 
+
+
+Template.sendMessage.events({
+  'click .send-message': function(event, template) {
+    var from = Meteor.user().username;
+    var to = this.nick;
+    var fromId = Meteor.userId();
+    var toId = this.owner;
+    var exist = Chatrooms.find({toId:toId}).count();
+    if (!from) {
+      alert('Fill out both fields yo!');
+    } else {
+      if(!exist){
+        Meteor.call('createChatRoom', {from:from,to:to,fromId: fromId, toId:toId}, function(err, succes){
+
+        });
+      } else{
+        alert('already exist');
+      }   
+    }
+  }
+});
+
+Template.chatrooms.helpers({
+  chatrooms: function(){
+    return Chatrooms.find({hidden:{$not:Meteor.userId()}});
+  },
+
+});
+
+
+
+Template.chatrooms.events({
+  'click .send-new-message' : function(event, template){
+    var message = template.find('.new-message').value;
+    var messagebox = template.find('.messages');
+    if(message){
+
+      Meteor.call('saveMessage', {message: message, timestamp: Date.now(), chatroom:this._id}, function(err, id){
+        if (err) {
+          alert('Something defnitely went wrong!');
+        }          
+        else {
+          template.find('.new-message').value = '';
+          messagebox.scrollTop = messagebox.scrollHeight;
+          console.log(messagebox.scrollTop);
+          console.log(messagebox.scrollHeight);
+        }
+      });   
+    } 
+  },
+  'click .close-chatroom' : function(events,template){
+    var user =  Meteor.userId();
+    Meteor.call('hideChat', {user:user,chatroom:this._id}, function(err, success){
+
+    });
+  }
+})
+
+
   Template.modalCreate.events({
   
     'click #launch-host': function (event, template){ 
@@ -28,7 +91,6 @@ if (Meteor.isClient) {
       var description = template.find('#description').value;
       var port = template.find('#port').value;
       var nick = Meteor.user().username;
-      console.log(nick);
 
 
       if ((gameName !== '')&&(port !== '')){
@@ -153,6 +215,23 @@ if (Meteor.isServer) {
   Meteor.publish("games", function () {
     return Games.find({}, {sort: {createdAt: -1}});
   });
+
+  Meteor.publish("chatrooms", function () {
+    return Chatrooms.find(
+      {
+        $or:[
+          {
+            toId:this.userId
+          },
+          {
+            fromId:this.userId
+          },
+        ]
+      },
+      {hidden:{$not:this.userId}}
+      );
+  });
+
   UserStatus.events.on("connectionLogout", function(fields) {
     var user = fields.userId;
     var logOut = fields.logoutTime;
@@ -166,9 +245,6 @@ if (Meteor.isServer) {
       }
     }, 50000);
   });
-
-}
-
 
 Meteor.methods({
   addGame: function(game){
@@ -186,5 +262,33 @@ Meteor.methods({
   },
   deleteGame: function(gameId){
     Games.remove(gameId);
+  },
+  saveMessage: function(message){
+   Chatrooms.update(
+     {
+      "_id": message.chatroom
+     },
+     {
+      $push:{
+        "messages" : message
+      }
+     }
+   );
+  },
+  createChatRoom: function(involvedPlayers){
+    Chatrooms.insert(involvedPlayers);
+  },
+  hideChat: function(chatroom){
+    Chatrooms.upsert(
+      {
+        "_id": chatroom.chatroom
+      },
+      {
+        $addToSet:{
+          hidden: chatroom.user
+        }
+      }
+    )
   }
 });
+}
