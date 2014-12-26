@@ -54,17 +54,13 @@ Template.chatrooms.helpers({
 });
 
 Chatrooms.find().observe({
-  added: function(post) {
-  },
+
   changed: function(post) {
     var wait = Meteor.setTimeout(function(){
       $('.messages').each(function(){
         $(this)[0].scrollTop =  $(this)[0].scrollHeight;
       });
     }, 500);    
-  },
-  removed: function(post) {
-    alert('removed');
   }
 });
 
