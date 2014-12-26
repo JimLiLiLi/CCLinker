@@ -53,12 +53,25 @@ Template.chatrooms.helpers({
 
 });
 
+Chatrooms.find().observe({
+  added: function(post) {
+  },
+  changed: function(post) {
+    var wait = Meteor.setTimeout(function(){
+      $('.messages').each(function(){
+        $(this)[0].scrollTop =  $(this)[0].scrollHeight;
+      });
+    }, 500);    
+  },
+  removed: function(post) {
+    alert('removed');
+  }
+});
 
-
-Template.chatrooms.events({
+Template.chatroom.events({
   'click .send-new-message' : function(event, template){
     var message = template.find('.new-message').value;
-    var messagebox = template.find('.messages');
+    
     if(message){
 
       Meteor.call('saveMessage', {message: message, timestamp: Date.now(), chatroom:this._id}, function(err, id){
@@ -67,12 +80,11 @@ Template.chatrooms.events({
         }          
         else {
           template.find('.new-message').value = '';
-          messagebox.scrollTop = messagebox.scrollHeight;
-          console.log(messagebox.scrollTop);
-          console.log(messagebox.scrollHeight);
         }
       });   
     } 
+
+
   },
   'click .close-chatroom' : function(events,template){
     var user =  Meteor.userId();
@@ -80,7 +92,7 @@ Template.chatrooms.events({
 
     });
   }
-})
+});
 
 
   Template.modalCreate.events({
