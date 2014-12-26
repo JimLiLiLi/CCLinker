@@ -54,39 +54,50 @@ Template.chatrooms.helpers({
 });
 
 Chatrooms.find().observe({
-
+  added: function(post){
+    var wait = Meteor.setTimeout(function(){
+      $('.chatroom').addClass(' active');
+    }, 300);      
+  },
   changed: function(post) {
     var wait = Meteor.setTimeout(function(){
       $('.messages').each(function(){
         $(this)[0].scrollTop =  $(this)[0].scrollHeight;
       });
-    }, 500);    
+    }, 300);    
   }
 });
 
 Template.chatroom.events({
-  'click .send-new-message' : function(event, template){
-    var message = template.find('.new-message').value;
-    
-    if(message){
+  'keypress input, click .send-new-message' : function(event, template){
+    if((event.type === 'click') || (event.keyCode === 13)){
+      var message = template.find('.new-message').value;
+      if(message){
 
-      Meteor.call('saveMessage', {message: message, timestamp: Date.now(), chatroom:this._id}, function(err, id){
-        if (err) {
-          alert('Something defnitely went wrong!');
-        }          
-        else {
-          template.find('.new-message').value = '';
-        }
-      });   
+        Meteor.call('saveMessage', {message: message, timestamp: Date.now(), chatroom:this._id}, function(err, id){
+          if (err) {
+            alert('Something defnitely went wrong!');
+          }          
+          else {
+            template.find('.new-message').value = '';
+          }
+        });   
+      }
     } 
-
-
   },
   'click .close-chatroom' : function(events,template){
     var user =  Meteor.userId();
     Meteor.call('hideChat', {user:user,chatroom:this._id}, function(err, success){
 
     });
+  },
+  'click .header-chatroom, click .minus-chatroom': function(event,template){
+    if(template.firstNode.className.indexOf('active') < 0){
+        template.firstNode.className = template.firstNode.className + ' active';
+    }else{
+      template.firstNode.className = 'chatroom';
+    }
+
   }
 });
 

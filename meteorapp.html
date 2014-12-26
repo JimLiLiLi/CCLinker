@@ -16,7 +16,7 @@
       {{> currentLobbies}}
     <!-- list lobbies end-->        
   </section>
-  <section class="container">
+  <section class="chatrooms">
       {{> chatrooms}}
   </section>
   <!-- create lobby modal !-->
@@ -177,10 +177,20 @@
 
 <template name="chatroom">
  <div class="chatroom">
-    {{from}} - {{to}}
+    <div class="header-chatroom">
+      {{from}} - {{to}}  
+      <button type="button" class="btn btn-default btn-xs close-chatroom pull-right">
+        <span class="glyphicon glyphicon glyphicon-remove" aria-hidden="true"></span>
+      </button>
+    </div>
     {{> messages}}
-    <input type="text" class="new-message"><button class="send-new-message">Send</button>
-    <button class="close-chatroom">x</button>
+
+    <div class="input-group">
+      <input type="text" class="form-control new-message" placeholder="Message...">
+      <span class="input-group-btn">
+        <button class="btn btn-default send-new-message" type="button">Send</button>
+      </span>
+    </div>
   </div>
 </template>  
 
