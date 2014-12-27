@@ -1,11 +1,16 @@
 // simple-todos.js
 Games = new Mongo.Collection('games');
 Chatrooms = new Mongo.Collection('chatrooms');
+usersData = new Mongo.Collection('usersData');
 
 if (Meteor.isClient) {
-  
-  Meteor.subscribe('games');
-  Meteor.subscribe('chatrooms');
+
+    Meteor.subscribe('games');
+    Meteor.subscribe('chatrooms');
+    Meteor.autosubscribe(function(){
+      Meteor.subscribe('usersData');
+    });  
+
 
   Accounts.ui.config({ passwordSignupFields: 'USERNAME_ONLY' });
 
@@ -24,7 +29,6 @@ if (Meteor.isClient) {
 
 
 
-
 Template.sendMessage.events({
   'click .send-message': function(event, template) {
     var from = Meteor.user().username;
@@ -39,19 +43,34 @@ Template.sendMessage.events({
         Meteor.call('createChatRoom', {from:from,to:to,fromId: fromId, toId:toId}, function(err, succes){
 
         });
-      } else{
-        alert('already exist');
-      }   
+      } else if(exist){
+            var user =  Meteor.userId();
+            Meteor.call('reopenChatRoom', {user:user,toId:toId,fromId: fromId}, function(err, success){
+
+        });
+      }  else{
+        alert('error');
+      } 
     }
   }
 });
 
 Template.chatrooms.helpers({
+
   chatrooms: function(){
     return Chatrooms.find({hidden:{$not:Meteor.userId()}});
   },
 
 });
+
+Template.chatroom.helpers({
+  onlineFrom:function(){
+    return Meteor.users.find({$and:[{"status.online":true},{"_id":this.fromId}]}).count();
+  },
+  onlineTo:function(){
+    return Meteor.users.find({$and:[{"status.online":true},{"_id":this.toId}]}).count();
+  }  
+})
 
 Chatrooms.find().observe({
   added: function(post){
@@ -73,8 +92,8 @@ Template.chatroom.events({
     if((event.type === 'click') || (event.keyCode === 13)){
       var message = template.find('.new-message').value;
       if(message){
-
-        Meteor.call('saveMessage', {message: message, timestamp: Date.now(), chatroom:this._id}, function(err, id){
+        console.log(this);
+        Meteor.call('saveMessage', {from:Meteor.user().username,message: message, timestamp: Date.now(), chatroom:this._id}, function(err, id){
           if (err) {
             alert('Something defnitely went wrong!');
           }          
@@ -98,6 +117,12 @@ Template.chatroom.events({
       template.firstNode.className = 'chatroom';
     }
 
+  }
+});
+
+Template.message.helpers({
+  fromMe: function(){
+    return this.from === Meteor.user().username;
   }
 });
 
@@ -251,6 +276,10 @@ if (Meteor.isServer) {
       );
   });
 
+Meteor.publish("usersData", function(users) {
+    return Meteor.users.find({});
+});
+
   UserStatus.events.on("connectionLogout", function(fields) {
     var user = fields.userId;
     var logOut = fields.logoutTime;
@@ -296,6 +325,22 @@ Meteor.methods({
   },
   createChatRoom: function(involvedPlayers){
     Chatrooms.insert(involvedPlayers);
+  },
+  reopenChatRoom: function(chatroom){
+      Chatrooms.update(
+      {
+        $and:[
+          {'toId': chatroom.toId},
+          {"fromId": chatroom.fromId}
+        ]
+        
+      },
+      {
+        $pull:{
+          hidden: chatroom.user
+        }
+      }
+    )
   },
   hideChat: function(chatroom){
     Chatrooms.upsert(

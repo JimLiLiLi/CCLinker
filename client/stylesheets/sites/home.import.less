@@ -9,6 +9,7 @@ html{
 
 body{
 	background: #111;
+	margin-bottom: 100px; 
 }
 
 h1,h2,h3,h4,h5,h6, .btn{
@@ -49,6 +50,11 @@ h1,h2,h3,h4,h5,h6, .btn{
     position: absolute;
     right: 0;
     top: 0;
+}
+
+.list-group-item:nth-child(2n+1) {
+    background-color: darken(@list-group-bg, 5%);
+
 }
 
 .overlay {
@@ -105,6 +111,8 @@ h1,h2,h3,h4,h5,h6, .btn{
     padding: 0;
     transform: translateY(82%);
     transition: transform 0.5s;
+    max-width: 255px;
+    position: relative;
     &.active{
     	transform: translateY(0);
     }
@@ -131,10 +139,22 @@ h1,h2,h3,h4,h5,h6, .btn{
 		    width: 200px;
 		    padding: 5px 10px;
 
-		    &:nth-child(2n+1) {
+		    &.me{
 			    border-left-color: #111;
 			}
 		}
 	}    
 }
 
+.disconnected {
+    background: none repeat scroll 0 0 rgba(0, 0, 0, 0.8);
+    bottom: 34px;
+    color: white;
+    font-weight: bold;
+    padding: 10px 15px;
+    position: absolute;
+    text-align: center;
+    text-transform: uppercase;
+    width: 100%;
+    z-index: 3;
+}
