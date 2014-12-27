@@ -69,7 +69,22 @@ Template.chatroom.helpers({
   },
   onlineTo:function(){
     return Meteor.users.find({$and:[{"status.online":true},{"_id":this.toId}]}).count();
-  }  
+  },
+  hidden:function(){
+    var hideCount = Chatrooms.find(
+    {
+      $and:[
+        {"_id":this._id},
+        {'hidden.0': {$exists:true} }
+      ]  
+    }
+    ).count();
+    if (hideCount > 0){
+      return true;
+    } else{
+      return false;
+    }
+  }
 })
 
 Chatrooms.find().observe({
@@ -198,7 +213,7 @@ Template.currentLobbies.helpers({
       }  
     },  
     players: function(){
-      return Meteor.users.find().count();
+      return Meteor.users.find({ "status.online": true }).count();
     },
 });
 
@@ -285,13 +300,12 @@ Meteor.publish("usersData", function(users) {
     var logOut = fields.logoutTime;
 
     Meteor.setTimeout(function(){
-      var verifUser = Meteor.users.findOne({},{_id:user});
-      var online = verifUser.status.online;
-      console.log(online);
-      if(!online){
+
+      var verifUser = Meteor.users.find({$and:[{"status.online":true},{"_id":user}]}).count();
+      if(verifUser < 1){
         Games.remove({owner:user});
       }
-    }, 50000);
+    }, 30000);
   });
 
 Meteor.methods({
@@ -336,8 +350,8 @@ Meteor.methods({
         
       },
       {
-        $pull:{
-          hidden: chatroom.user
+        $pullAll:{
+          hidden: [chatroom.toId,chatroom.fromId]
         }
       }
     )

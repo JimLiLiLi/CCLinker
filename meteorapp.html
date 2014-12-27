@@ -189,7 +189,11 @@
       </button>
     </div>
     {{> messages}}
-    
+      {{#if hidden}}
+      <div class="user-closed-chat">
+        chat closed by other user
+      </div>
+      {{/if}}
       {{#unless onlineFrom}}
       <div class="disconnected">
          {{from}} Is Disconnected
@@ -202,7 +206,7 @@
       {{/unless}}
     
     <div class="input-group">
-      <input type="text" class="form-control new-message" placeholder="Message...">
+      <input type="text" class="form-control new-message" placeholder="Message..." disabled="{{hidden}}">
       <span class="input-group-btn">
         <button class="btn btn-default send-new-message" type="button">Send</button>
       </span>
