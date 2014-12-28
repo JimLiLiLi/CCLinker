@@ -2,11 +2,13 @@
 Games = new Mongo.Collection('games');
 Chatrooms = new Mongo.Collection('chatrooms');
 usersData = new Mongo.Collection('usersData');
+GlobalChat = new Mongo.Collection('globalchat');
 
 if (Meteor.isClient) {
 
     Meteor.subscribe('games');
     Meteor.subscribe('chatrooms');
+    Meteor.subscribe('globalchat');
     Meteor.autosubscribe(function(){
       Meteor.subscribe('usersData');
     });  
@@ -27,6 +29,36 @@ if (Meteor.isClient) {
     }
   }); 
 
+
+Template.globalchat.events({
+  'keypress input, click .send-new-message-global' : function(event, template){
+    if((event.type === 'click') || (event.keyCode === 13)){
+      var message = template.find('.new-message-global').value;
+      if(message){
+        Meteor.call('saveMessageGlobal', {user:Meteor.user().username,message: message}, function(err, id){
+          if (err) {
+            alert('Something defnitely went wrong!');
+          }          
+          else {
+            template.find('.new-message-global').value = '';
+          }
+        });   
+      }
+    } 
+  },
+});
+
+Template.globalchat.helpers({
+  messages: function(){
+    return GlobalChat.find({});
+  }
+});
+
+Template.participants.helpers({
+  participants: function(){
+    return Meteor.users.find({"status.online":true},{username:1});
+  }
+});
 
 
 Template.sendMessage.events({
@@ -107,7 +139,6 @@ Template.chatroom.events({
     if((event.type === 'click') || (event.keyCode === 13)){
       var message = template.find('.new-message').value;
       if(message){
-        console.log(this);
         Meteor.call('saveMessage', {from:Meteor.user().username,message: message, timestamp: Date.now(), chatroom:this._id}, function(err, id){
           if (err) {
             alert('Something defnitely went wrong!');
@@ -292,8 +323,13 @@ if (Meteor.isServer) {
   });
 
 Meteor.publish("usersData", function(users) {
-    return Meteor.users.find({});
+    return Meteor.users.find({},{status:0});
 });
+
+Meteor.publish('globalchat', function(){
+  return GlobalChat.find({},{limit:30});
+});
+
 
   UserStatus.events.on("connectionLogout", function(fields) {
     var user = fields.userId;
@@ -367,6 +403,9 @@ Meteor.methods({
         }
       }
     )
+  },
+  saveMessageGlobal: function(message){
+    GlobalChat.insert(message);
   }
 });
 }

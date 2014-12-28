@@ -12,9 +12,12 @@
     {{> header}}
   </section>
   <section class="container">
-    <!-- list lobbies -->
-      {{> currentLobbies}}
-    <!-- list lobbies end-->        
+      <!-- list lobbies -->
+        {{> currentLobbies}}
+      <!-- list lobbies end--> 
+     <!-- global chat -->
+      {{> channel}}
+      <!-- global chat -->
   </section>
   <section class="chatrooms">
       {{> chatrooms}}
@@ -29,7 +32,7 @@
     <div class="main-title col-sm-8">
       <h1>See me in Melty</h1>
         <h2>Game finder for Melty Blood</h2>
-        <h5>Require: CCCaster v2.1C / To open the caster directly from the site you'll also need <a href="https://raw.githubusercontent.com/Lucanis/CCLinker/master/Add_Handler_Protocol.bat">this</a></h5>
+        <h5>Require: <a href="http://www.meltybread.com/forums/melty-blood-auditorium/cccaster-v1-0a-netplay-client-for-mbaacc-1-4-0/">CCCaster</a> / <small>To open the caster directly from the site you'll also need to install <a href="https://raw.githubusercontent.com/Lucanis/CCLinker/master/Add_Handler_Protocol.bat">this</a> (download in your cccaster.v2.1.exe directory and run as admin)</small></h5>
       <button type="button" class="btn btn-lg btn-primary" id="create-lobby" disabled="{{#unless currentUser}}disabled{{/unless}}">Create lobby</button>
       {{#unless currentUser}}<p><small>You need to be logged in to create a lobby.</small></p>{{/unless}}
 
@@ -60,11 +63,11 @@
 
         <h3 class="panel-title">Curent Lobbies</h3>      
     </div>
-    <!--        
+          
     <div class="panel-body">
-      
+      <p>For the link between the caster and the website to work nicely you need the latest version of CCcaster(v2.1f)</p>
     </div>
-    !-->
+    
     <ul class="list-group">
       {{#each games}}
         {{> game}}
@@ -118,6 +121,9 @@
       <div class="collapse navbar-collapse" id="primary-nav">
         <ul class="nav navbar-nav navbar-right">
          {{> loginButtons}}
+         <li>
+           <a href="mailto:seemeinmelty@gmail.com">Something is broken</a>
+         </li>
         </ul>
       </div>
     </div>
@@ -227,3 +233,60 @@
         <p>{{message}}</p>
     </blockquote>
 </template>
+
+<template name="channel">
+  <div class="row">
+    <div class="col-md-9">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">Global chat</h3>
+        </div>
+            {{> globalchat}}
+      </div>
+    </div>
+    <div class="col-md-3">
+        <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">users</h3>
+        </div>          
+        {{> participants}}
+        </div>
+      </div>
+    </div>
+</template>
+
+<template name="participants">
+  <ul class="list-group">
+    {{#each participants}}
+      <li class="list-group-item"><div class="color-swatch" style="background-color:{{labelClass}};"></div> {{ username }}</li>
+    {{/each}}
+  </ul>
+</template>
+
+<template name="globalchat">
+  <ul class="list-group list-chat" id="scroll">
+  {{#each messages}}
+    <li class="list-group-item"><b>{{user}}</b>:{{message}}</li>
+    <script> if (typeof(scrolldown) == "function") { scrolldown(); }</script>
+  {{/each}}
+  </ul>
+  {{#if currentUser}}
+    <div class="input-group">
+      <input type="text" class="form-control new-message-global" placeholder="Message..." disabled="{{hidden}}">
+      <span class="input-group-btn">
+          <button class="btn btn-default send-new-message-global" type="button">Send</button>
+      </span>
+    </div>
+    {{else}}
+      <p>you must be connected to use the chat</p>
+    {{/if}}
+     <script type="text/javascript">
+    /* Call it everytime ? ....
+    around 10 times at the first call...
+    */
+    var scrolldown = function() {
+    var elem = document.getElementById('scroll');
+    elem.scrollTop = elem.scrollHeight;
+    }
+    </script>    
+</template>  
