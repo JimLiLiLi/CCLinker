@@ -23,13 +23,17 @@ Template.globalchat.events({
     if((event.type === 'click') || (event.keyCode === 13)){
       var message = template.find('.new-message-global').value;
       if(message){
+        Session.set('sendingmMessage', true);
         Meteor.call('saveMessageGlobal', {user:Meteor.user().username,message: message,timestamp: Date.now()}, function(err, id){
           if (err) {
             alert('Something defnitely went wrong!');
+            Session.set('sendingmMessage', false);
           }          
           else {
             template.find('.new-message-global').value = '';
+            Session.set('sendingmMessage', false);
           }
+
         });   
       }
     } 
@@ -39,6 +43,10 @@ Template.globalchat.events({
 Template.globalchat.helpers({
   messages: function(){
     return GlobalChat.find({}, {sort: {timestamp:1}});
+  },
+  hidden: function(){
+    return Session.get('sendingmMessage');
+
   }
 });
 
