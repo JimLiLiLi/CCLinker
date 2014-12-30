@@ -13,21 +13,9 @@ if (Meteor.isClient) {
       Meteor.subscribe('usersData');
     });  
 
+  Accounts.ui.config({ passwordSignupFields: 'USERNAME_ONLY' }); 
 
-  Accounts.ui.config({ passwordSignupFields: 'USERNAME_ONLY' });
 
-  HTTP.get('http://www.telize.com/geoip', function(err, result) {
-    if(err){
-      console.log(err);
-    }else{
-      var ip = result.data.ip;
-      var country = result.data.country_code;
-      var continent = result.data.continent_code;
-      Session.set('ipUser', ip);
-      Session.set('countryUser', country);
-      Session.set('continentUser', continent);
-    }
-  }); 
 
 
 Template.globalchat.events({
@@ -35,7 +23,7 @@ Template.globalchat.events({
     if((event.type === 'click') || (event.keyCode === 13)){
       var message = template.find('.new-message-global').value;
       if(message){
-        Meteor.call('saveMessageGlobal', {user:Meteor.user().username,message: message}, function(err, id){
+        Meteor.call('saveMessageGlobal', {user:Meteor.user().username,message: message,timestamp: Date.now()}, function(err, id){
           if (err) {
             alert('Something defnitely went wrong!');
           }          
@@ -50,7 +38,7 @@ Template.globalchat.events({
 
 Template.globalchat.helpers({
   messages: function(){
-    return GlobalChat.find({});
+    return GlobalChat.find({}, {sort: {timestamp:1}});
   }
 });
 
@@ -224,9 +212,32 @@ Template.message.helpers({
   });
 
 
+HTTP.get('http://ip4.telize.com/jsonip', function(err, result){
+  if(err){
+    console.log(err);
+  } else {
+    console.log(result);
+    Session.set('ipUser', result.content);
+  }
+});
+
+
+
+  HTTP.get('http://www.telize.com/geoip', function(err, result) {
+    if(err){
+      console.log(err);
+    }else{
+      var country = result.data.country_code;
+      var continent = result.data.continent_code;
+      Session.set('countryUser', country);
+      Session.set('continentUser', continent);
+    }
+  }); 
+
+
   Template.modalCreate.helpers({
     getIp: function(){ 
-      return Session.get('ipUser');     
+      return Session.get('ipUser');
     },
 
   });
@@ -299,6 +310,10 @@ Template.game.events({
       toClipboard(ip);
     }
 });
+
+
+
+
 }
 
 if (Meteor.isServer) {
@@ -327,9 +342,8 @@ Meteor.publish("usersData", function(users) {
 });
 
 Meteor.publish('globalchat', function(){
-  return GlobalChat.find({},{limit:30});
+  return GlobalChat.find({},{sort:{timestamp:-1}, limit:50});
 });
-
 
   UserStatus.events.on("connectionLogout", function(fields) {
     var user = fields.userId;
