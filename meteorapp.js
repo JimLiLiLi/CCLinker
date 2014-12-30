@@ -212,16 +212,14 @@ Template.message.helpers({
   });
 
 
-HTTP.get('http://ip4.telize.com/jsonip', function(err, result){
+HTTP.get('http://ip4.telize.com', function(err, result){
   if(err){
     console.log(err);
   } else {
-    console.log(result);
+
     Session.set('ipUser', result.content);
   }
 });
-
-
 
   HTTP.get('http://www.telize.com/geoip', function(err, result) {
     if(err){
