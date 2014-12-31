@@ -24,8 +24,9 @@ Template.globalchat.events({
       var message = template.find('.new-message-global').value;
       if(message){
         Session.set('sendingmMessage', true);
-        Meteor.call('saveMessageGlobal', {user:Meteor.user().username,message: message,timestamp: Date.now()}, function(err, id){
+        Meteor.call('saveMessageGlobal', {user:Meteor.user().username, message:message}, function(err, id){
           if (err) {
+            console.log(err);
             alert('Something defnitely went wrong!');
             Session.set('sendingmMessage', false);
           }          
@@ -229,7 +230,6 @@ HTTP.get('http://ip4.telize.com', function(err, result){
   if(err){
     console.log(err);
   } else {
-
     Session.set('ipUser', result.content);
   }
 });
@@ -294,7 +294,7 @@ var clock = Meteor.setInterval(CalcElapsedtime, 60000);
 
 
 function toClipboard(text) {
-  window.alert(text);
+  alert(text.replace('\n',''));
 }
 
 Template.game.helpers({
@@ -430,7 +430,13 @@ Meteor.methods({
     )
   },
   saveMessageGlobal: function(message){
-    GlobalChat.insert(message);
+    console.log(message)
+    GlobalChat.insert(
+    {
+      user: message.user,
+      message: message.message,
+      timestamp: Date.now()
+    });
   }
 });
 }
