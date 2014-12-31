@@ -46,8 +46,13 @@ Template.globalchat.helpers({
   },
   hidden: function(){
     return Session.get('sendingmMessage');
+  },
 
-  }
+});
+
+UI.registerHelper("formatDate", function(date){
+    var dt = new Date(date);
+    return dt.toLocaleTimeString();
 });
 
 Template.participants.helpers({

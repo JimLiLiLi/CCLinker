@@ -262,7 +262,7 @@
 <template name="globalchat">
   <ul class="list-group list-chat" id="scroll">
   {{#each messages}}
-    <li class="list-group-item"><b>{{user}}</b>:{{message}}</li>
+    <li class="list-group-item"><i>{{formatDate timestamp}}</i> | <b>{{user}}</b>:{{message}}</li>
     <script> if (typeof(scrolldown) == "function") { scrolldown(); }</script>
   {{/each}}
   </ul>
