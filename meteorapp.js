@@ -56,9 +56,14 @@ UI.registerHelper("formatDate", function(date){
     return dt.toLocaleTimeString();
 });
 
+
 Template.participants.helpers({
   participants: function(){
-    return Meteor.users.find({"status.online":true},{sort: {"username":1}});
+    var users = Meteor.users.find({"status.online":true}).fetch(); 
+    return _.sortBy(users, function(users) {
+      return users.username.toLowerCase();
+    }); 
+
   }
 });
 
