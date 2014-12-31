@@ -58,7 +58,7 @@ UI.registerHelper("formatDate", function(date){
 
 Template.participants.helpers({
   participants: function(){
-    return Meteor.users.find({"status.online":true},{username:1});
+    return Meteor.users.find({"status.online":true},{sort: {"username":1}});
   }
 });
 
